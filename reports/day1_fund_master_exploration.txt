@@ -1,0 +1,81 @@
+==========================================================================================
+FUND MASTER EXPLORATION
+==========================================================================================
+Total schemes: 40
+
+Unique Fund Houses (10):
+  - Aditya Birla Sun Life MF  (3 schemes)
+  - Axis Mutual Fund  (4 schemes)
+  - DSP Mutual Fund  (3 schemes)
+  - HDFC Mutual Fund  (5 schemes)
+  - ICICI Prudential MF  (5 schemes)
+  - Kotak Mahindra MF  (4 schemes)
+  - Mirae Asset MF  (3 schemes)
+  - Nippon India MF  (5 schemes)
+  - SBI Mutual Fund  (5 schemes)
+  - UTI Mutual Fund  (3 schemes)
+
+Unique Categories (2):
+  - Debt  (6 schemes)
+  - Equity  (34 schemes)
+
+Unique Sub-Categories (12):
+  - ELSS  (1 schemes)
+  - Flexi Cap  (2 schemes)
+  - Gilt  (2 schemes)
+  - Index  (1 schemes)
+  - Index/ETF  (1 schemes)
+  - Large & Mid Cap  (1 schemes)
+  - Large Cap  (14 schemes)
+  - Liquid  (3 schemes)
+  - Mid Cap  (7 schemes)
+  - Short Duration  (1 schemes)
+  - Small Cap  (6 schemes)
+  - Value  (1 schemes)
+
+Category -> Sub-Category breakdown:
+category    sub_category  count
+    Debt            Gilt      2
+    Debt          Liquid      3
+    Debt  Short Duration      1
+  Equity            ELSS      1
+  Equity       Flexi Cap      2
+  Equity           Index      1
+  Equity       Index/ETF      1
+  Equity Large & Mid Cap      1
+  Equity       Large Cap     14
+  Equity         Mid Cap      7
+  Equity       Small Cap      6
+  Equity           Value      1
+
+Unique Risk Categories (5):
+  - High  (8 schemes)
+  - Low  (6 schemes)
+  - Moderate  (16 schemes)
+  - Moderately High  (4 schemes)
+  - Very High  (6 schemes)
+
+Unique Plan Types (2): ['Direct', 'Regular']
+
+Unique SEBI Category Codes (9): ['DC01', 'DC02', 'EC01', 'EC02', 'EC03', 'EC04', 'EC05', 'EC06', 'EI01']
+
+==========================================================================================
+AMFI SCHEME CODE STRUCTURE
+==========================================================================================
+Column: amfi_code | dtype: int64
+Min code: 100016  |  Max code: 149324
+Unique codes: 40 (out of 40 rows -> one row per scheme, as expected)
+
+Notes on AMFI codes:
+  - Each amfi_code is a unique numeric ID assigned by AMFI to a single scheme+plan
+    combination (e.g. Regular Growth and Direct Growth of the same fund get
+    DIFFERENT amfi_codes, even though the underlying portfolio is identical).
+  - This is confirmed by fund_house: SBI Bluechip Regular (119551) vs
+    SBI Bluechip Direct (119552) — same scheme, different code, different plan.
+  - amfi_code is the primary join key linking fund_master to nav_history,
+    scheme_performance, transactions, and holdings.
+
+Example — Regular vs Direct plan pairs (same scheme_name root):
+ amfi_code                               scheme_name    plan  expense_ratio_pct
+    119551 SBI Bluechip Fund - Regular Plan - Growth Regular               1.54
+    119552  SBI Bluechip Fund - Direct Plan - Growth  Direct               0.66
