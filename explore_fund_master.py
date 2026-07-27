@@ -1,22 +1,19 @@
 """
 explore_fund_master.py
 -----------------------
-Task 6: Explore fund_master.csv
+Explore fund_master.csv
 - Unique fund houses
 - Unique categories and sub-categories
 - Unique risk categories
 - AMFI scheme code structure
-
 Usage:
     python explore_fund_master.py
 """
 
 import os
 import pandas as pd
-
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 150)
-
 RAW_DIR = os.path.join("data", "raw")
 FUND_MASTER_PATH = os.path.join(RAW_DIR, "01_fund_master.csv")
 
