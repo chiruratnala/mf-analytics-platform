@@ -17,8 +17,6 @@ pd.set_option("display.width", 150)
 
 RAW_DIR = os.path.join("data", "raw")
 
-# Expected filenames -> friendly key name.
-# Update the filenames on the right if yours differ.
 DATASETS = {
     "fund_master": "01_fund_master.csv",
     "nav_history": "02_nav_history.csv",
