@@ -22,7 +22,7 @@ Fetching scheme 120841 (kotak_bluechip)...
   -> Saved 3339 NAV records to data\raw\live_nav_kotak_bluechip.csv
      Date range: 2013-01-07 to 2026-07-24
 
-============================================================
+==========================================================
 Successfully fetched 6/6 schemes.
   - hdfc_top_100_direct: 3129 records
   - sbi_bluechip: 3274 records
