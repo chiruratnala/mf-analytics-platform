@@ -6,7 +6,6 @@ nav_history: 40 unique amfi_codes
 [OK] Every scheme in fund_master has at least one NAV record in nav_history.
 
 [OK] Every amfi_code in nav_history is a recognized scheme in fund_master.
-
 ==========================================================================================
 NAV COVERAGE PER SCHEME (matched codes only)
 ==========================================================================================
