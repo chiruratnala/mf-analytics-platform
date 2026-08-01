@@ -2,7 +2,6 @@
 FUND MASTER EXPLORATION
 ==========================================================================================
 Total schemes: 40
-
 Unique Fund Houses (10):
   - Aditya Birla Sun Life MF  (3 schemes)
   - Axis Mutual Fund  (4 schemes)
@@ -71,11 +70,11 @@ Notes on AMFI codes:
     combination (e.g. Regular Growth and Direct Growth of the same fund get
     DIFFERENT amfi_codes, even though the underlying portfolio is identical).
   - This is confirmed by fund_house: SBI Bluechip Regular (119551) vs
-    SBI Bluechip Direct (119552) — same scheme, different code, different plan.
+    SBI Bluechip Direct (119552) â€” same scheme, different code, different plan.
   - amfi_code is the primary join key linking fund_master to nav_history,
     scheme_performance, transactions, and holdings.
 
-Example — Regular vs Direct plan pairs (same scheme_name root):
+Example â€” Regular vs Direct plan pairs (same scheme_name root):
  amfi_code                               scheme_name    plan  expense_ratio_pct
     119551 SBI Bluechip Fund - Regular Plan - Growth Regular               1.54
     119552  SBI Bluechip Fund - Direct Plan - Growth  Direct               0.66

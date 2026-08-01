@@ -3,11 +3,9 @@ AMFI CODE VALIDATION: fund_master <-> nav_history
 ==========================================================================================
 fund_master: 40 unique amfi_codes
 nav_history: 40 unique amfi_codes
-
 [OK] Every scheme in fund_master has at least one NAV record in nav_history.
 
 [OK] Every amfi_code in nav_history is a recognized scheme in fund_master.
-
 ==========================================================================================
 NAV COVERAGE PER SCHEME (matched codes only)
 ==========================================================================================
@@ -56,7 +54,7 @@ NAV COVERAGE PER SCHEME (matched codes only)
 [OK] No scheme has unusually low NAV record counts (median = 1150).
 
 ==========================================================================================
-DATA QUALITY SUMMARY — AMFI CODE VALIDATION
+DATA QUALITY SUMMARY â€” AMFI CODE VALIDATION
 ==========================================================================================
 - Total schemes in fund_master: 40
 - Total unique schemes with NAV data: 40

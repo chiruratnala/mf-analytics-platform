@@ -1,12 +1,11 @@
 """
 validate_amfi_codes.py
 ------------------------
-Task 7: Validate AMFI codes across fund_master and nav_history.
+Validate AMFI codes across fund_master and nav_history.
 - Confirm every code in fund_master exists in nav_history
 - Confirm every code in nav_history exists in fund_master (orphan check)
 - Check NAV record count / date coverage per scheme
 - Write a short data quality summary
-
 Usage:
     python validate_amfi_codes.py
 """
@@ -16,7 +15,6 @@ import pandas as pd
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 150)
-
 RAW_DIR = os.path.join("data", "raw")
 FUND_MASTER_PATH = os.path.join(RAW_DIR, "01_fund_master.csv")
 NAV_HISTORY_PATH = os.path.join(RAW_DIR, "02_nav_history.csv")
@@ -26,17 +24,14 @@ def main():
     fund_master = pd.read_csv(FUND_MASTER_PATH)
     nav_history = pd.read_csv(NAV_HISTORY_PATH)
     nav_history["date"] = pd.to_datetime(nav_history["date"], errors="coerce")
-
     fm_codes = set(fund_master["amfi_code"])
     nav_codes = set(nav_history["amfi_code"])
-
     print("=" * 90)
     print("AMFI CODE VALIDATION: fund_master <-> nav_history")
     print("=" * 90)
     print(f"fund_master: {len(fm_codes)} unique amfi_codes")
     print(f"nav_history: {len(nav_codes)} unique amfi_codes")
     print()
-
     # ---- Codes in fund_master but missing from nav_history ----
     missing_nav = fm_codes - nav_codes
     if missing_nav:
@@ -104,7 +99,6 @@ def main():
     print(f"- NAV date range overall: {nav_history['date'].min().date()} to "
           f"{nav_history['date'].max().date()}")
     print(f"- Median NAV records per scheme: {median_records:.0f}")
-
 
 if __name__ == "__main__":
     main()

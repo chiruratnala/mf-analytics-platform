@@ -4,7 +4,6 @@ data_ingestion.py
 Loads all 10 provided MF Analytics datasets from data/raw/, prints
 shape / dtypes / head for each, and runs basic data-quality checks
 (nulls, duplicates, unexpected dtypes) to build a short anomaly summary.
-
 Usage:
     python data_ingestion.py
 """
@@ -14,7 +13,6 @@ import pandas as pd
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 150)
-
 RAW_DIR = os.path.join("data", "raw")
 
 DATASETS = {
@@ -29,7 +27,6 @@ DATASETS = {
     "holdings": "09_portfolio_holdings.csv",
     "benchmark": "10_benchmark_indices.csv",
 }
-
 
 def load_dataset(name: str, filename: str) -> pd.DataFrame | None:
     """Load a single CSV and print shape, dtypes, and head."""
