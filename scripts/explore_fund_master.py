@@ -1,4 +1,5 @@
-"""Explore the fund-master dataset and document its join-key structure."""
+"""Summarise the structure of the mutual-fund master dataset."""
+
 from __future__ import annotations
 
 import logging
@@ -6,58 +7,103 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT_DIR = Path(__file__).resolve().parents[1]
-RAW_DIR = ROOT_DIR / "data" / "raw"
-FUND_MASTER_PATH = RAW_DIR / "01_fund_master.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FUND_MASTER_PATH = PROJECT_ROOT / "data" / "raw" / "01_fund_master.csv"
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 
-def require_columns(df: pd.DataFrame, columns: list[str]) -> None:
-    """Raise a clear error when expected fund-master columns are missing."""
-    missing = [col for col in columns if col not in df.columns]
+def load_fund_master(path: Path = FUND_MASTER_PATH) -> pd.DataFrame:
+    """Load the fund-master CSV after validating that it exists."""
+    if not path.exists():
+        raise FileNotFoundError(f"Fund-master file not found: {path}")
+    return pd.read_csv(path)
+
+
+def build_summary(df: pd.DataFrame) -> dict[str, object]:
+    """Build reusable fund-master summary information."""
+    required = {
+        "fund_house",
+        "category",
+        "sub_category",
+        "risk_category",
+        "plan",
+        "sebi_category_code",
+        "amfi_code",
+        "scheme_name",
+        "expense_ratio_pct",
+    }
+    missing = sorted(required - set(df.columns))
     if missing:
-        raise ValueError(f"Missing fund-master columns: {missing}")
+        raise ValueError(f"fund_master is missing required columns: {missing}")
+
+    return {
+        "total_schemes": len(df),
+        "fund_houses": sorted(df["fund_house"].dropna().unique().tolist()),
+        "categories": sorted(df["category"].dropna().unique().tolist()),
+        "sub_categories": sorted(df["sub_category"].dropna().unique().tolist()),
+        "risk_categories": sorted(df["risk_category"].dropna().unique().tolist()),
+        "plans": sorted(df["plan"].dropna().unique().tolist()),
+        "sebi_codes": sorted(df["sebi_category_code"].dropna().unique().tolist()),
+        "min_amfi_code": df["amfi_code"].min(),
+        "max_amfi_code": df["amfi_code"].max(),
+        "unique_amfi_codes": int(df["amfi_code"].nunique()),
+    }
+
+
+def log_summary(df: pd.DataFrame, summary: dict[str, object]) -> None:
+    """Write the fund-master summary through the project logger."""
+    logger.info("Total schemes: %s", summary["total_schemes"])
+    logger.info(
+        "Fund houses: %d | Categories: %d | Sub-categories: %d",
+        len(summary["fund_houses"]),
+        len(summary["categories"]),
+        len(summary["sub_categories"]),
+    )
+    logger.info(
+        "Risk categories: %s | Plans: %s",
+        ", ".join(summary["risk_categories"]),
+        ", ".join(summary["plans"]),
+    )
+    logger.info(
+        "AMFI code range: %s–%s | unique codes: %s",
+        summary["min_amfi_code"],
+        summary["max_amfi_code"],
+        summary["unique_amfi_codes"],
+    )
+
+    breakdown = (
+        df.groupby(["category", "sub_category"])
+        .size()
+        .reset_index(name="count")
+    )
+    logger.info("Category/sub-category breakdown:\n%s", breakdown.to_string(index=False))
+
+    if summary["unique_amfi_codes"] != summary["total_schemes"]:
+        logger.warning("AMFI codes are not unique in fund_master.")
+
+    scheme_root = df["scheme_name"].astype(str).str.replace(
+        r" - (Regular|Direct) Plan.*",
+        "",
+        regex=True,
+    )
+    first_root = scheme_root.iloc[0]
+    pair = df.loc[
+        scheme_root.eq(first_root),
+        ["amfi_code", "scheme_name", "plan", "expense_ratio_pct"],
+    ]
+    logger.info("Example Regular/Direct pair:\n%s", pair.to_string(index=False))
 
 
 def main() -> None:
-    """Print fund-house, category, risk, plan and AMFI-code exploration."""
-    if not FUND_MASTER_PATH.exists():
-        raise FileNotFoundError(f"Fund master not found: {FUND_MASTER_PATH}")
-
-    df = pd.read_csv(FUND_MASTER_PATH)
-    require_columns(
-        df,
-        ["amfi_code", "fund_house", "scheme_name", "category", "sub_category",
-         "plan", "risk_category", "sebi_category_code"],
-    )
-
-    print("=" * 90)
-    print("FUND MASTER EXPLORATION")
-    print("=" * 90)
-    print(f"Rows: {len(df)} | Unique AMFI codes: {df['amfi_code'].nunique()}")
-
-    for column, label in [
-        ("fund_house", "Fund Houses"),
-        ("category", "Categories"),
-        ("sub_category", "Sub-Categories"),
-        ("risk_category", "Risk Categories"),
-        ("plan", "Plan Types"),
-        ("sebi_category_code", "SEBI Category Codes"),
-    ]:
-        values = df[column].dropna().astype(str).value_counts().sort_index()
-        print(f"\n{label} ({len(values)}):")
-        print(values.to_string())
-
-    print("\nCategory -> Sub-category breakdown:")
-    print(df.groupby(["category", "sub_category"], dropna=False).size().reset_index(name="count").to_string(index=False))
-
-    codes = pd.to_numeric(df["amfi_code"], errors="coerce")
-    print("\nAMFI code checks:")
-    print(f"  Numeric codes: {codes.notna().sum()}/{len(df)}")
-    print(f"  Unique codes: {df['amfi_code'].nunique()}")
-    print(f"  Duplicate codes: {df['amfi_code'].duplicated().sum()}")
-    print("  AMFI code is the primary join key across scheme-level datasets.")
+    """Load and report fund-master metadata."""
+    df = load_fund_master()
+    summary = build_summary(df)
+    log_summary(df, summary)
 
 
 if __name__ == "__main__":

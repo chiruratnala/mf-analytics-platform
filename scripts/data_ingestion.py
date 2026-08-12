@@ -1,14 +1,19 @@
-"""Day 1 data ingestion and basic quality checks for the Bluestock MF capstone."""
+"""Inspect and validate the raw Bluestock mutual-fund datasets.
+
+The script loads the ten project CSV datasets from ``data/raw/`` and
+produces a structured data-quality summary. Console output is limited to
+informational logging; no ad-hoc debug prints are used.
+"""
+
 from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Dict
 
 import pandas as pd
 
-ROOT_DIR = Path(__file__).resolve().parents[1]
-RAW_DIR = ROOT_DIR / "data" / "raw"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+RAW_DIR = PROJECT_ROOT / "data" / "raw"
 
 DATASETS = {
     "fund_master": "01_fund_master.csv",
@@ -23,88 +28,119 @@ DATASETS = {
     "benchmark": "10_benchmark_indices.csv",
 }
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
 def load_dataset(name: str, filename: str) -> pd.DataFrame | None:
-    """Load one CSV from data/raw and print basic profiling information."""
+    """Load one raw CSV dataset and return it as a DataFrame.
+
+    Args:
+        name: Logical dataset name used in logs and reports.
+        filename: CSV filename under ``data/raw``.
+
+    Returns:
+        The loaded DataFrame, or ``None`` when the expected file is absent.
+    """
     path = RAW_DIR / filename
     if not path.exists():
-        logger.warning("[%s] Missing: %s", name, path)
+        logger.warning("Missing dataset %s: %s", name, path)
         return None
 
-    try:
-        df = pd.read_csv(path)
-    except Exception as exc:
-        logger.error("[%s] Could not read %s: %s", name, path, exc)
-        return None
-
-    print("=" * 90)
-    print(f"DATASET: {name} ({filename})")
-    print("=" * 90)
-    print(f"Shape: {df.shape[0]} rows x {df.shape[1]} columns")
-    print("\nDtypes:")
-    print(df.dtypes)
-    print("\nHead:")
-    print(df.head())
+    df = pd.read_csv(path)
+    logger.info(
+        "Loaded %-22s | %7d rows | %3d columns",
+        name,
+        len(df),
+        len(df.columns),
+    )
     return df
 
 
 def check_anomalies(name: str, df: pd.DataFrame) -> list[str]:
-    """Run generic non-destructive data-quality checks."""
+    """Return basic data-quality findings for a dataset.
+
+    Checks missing values, duplicate rows, date-like object columns,
+    numeric-looking text columns, and uniqueness of scheme identifiers
+    in the fund-master dataset.
+    """
     findings: list[str] = []
 
-    null_cols = df.isna().sum()
-    null_cols = null_cols[null_cols > 0]
+    null_counts = df.isna().sum()
+    null_cols = null_counts[null_counts > 0]
     if not null_cols.empty:
         findings.append(
             "Missing values: "
             + ", ".join(f"{col} ({count})" for col, count in null_cols.items())
         )
 
-    duplicates = int(df.duplicated().sum())
-    if duplicates:
-        findings.append(f"Fully duplicate rows: {duplicates}")
+    duplicate_count = int(df.duplicated().sum())
+    if duplicate_count:
+        findings.append(f"Fully duplicate rows: {duplicate_count}")
 
-    for col in df.columns:
-        if "date" in col.lower() and df[col].dtype == "object":
-            findings.append(f"Date-like column '{col}' is stored as text")
+    for column in df.columns:
+        if "date" in column.lower() and df[column].dtype == "object":
+            findings.append(
+                f"Date-like column '{column}' is stored as text."
+            )
 
-    if "amfi_code" in df.columns:
-        numeric_codes = pd.to_numeric(df["amfi_code"], errors="coerce")
-        if numeric_codes.isna().any():
-            findings.append("amfi_code contains non-numeric or missing values")
+        if df[column].dtype == "object":
+            sample = df[column].dropna().astype(str).head(20)
+            if (
+                not sample.empty
+                and sample.str.contains(r"\d", regex=True).any()
+                and sample.str.contains(r"[,\u20b9%]", regex=True).any()
+            ):
+                findings.append(
+                    f"Column '{column}' may contain numeric values stored as text."
+                )
+
+    code_columns = [
+        column
+        for column in df.columns
+        if "code" in column.lower() or "scheme_id" in column.lower()
+    ]
+    if name == "fund_master":
+        for column in code_columns:
+            if df[column].nunique(dropna=False) != len(df):
+                findings.append(
+                    f"'{column}' is not unique in fund_master; "
+                    "expected one row per scheme."
+                )
 
     if not findings:
-        findings.append("No major anomalies detected by generic checks")
+        findings.append("No major anomalies detected in basic checks.")
+
     return findings
 
 
-def main() -> Dict[str, pd.DataFrame]:
-    """Load all available raw datasets and print a quality summary."""
-    loaded: Dict[str, pd.DataFrame] = {}
+def run_quality_check() -> dict[str, list[str]]:
+    """Load all available raw datasets and return their quality findings."""
     report: dict[str, list[str]] = {}
+    loaded_count = 0
 
     for name, filename in DATASETS.items():
         df = load_dataset(name, filename)
-        if df is not None:
-            loaded[name] = df
-            report[name] = check_anomalies(name, df)
+        if df is None:
+            continue
+        loaded_count += 1
+        report[name] = check_anomalies(name, df)
 
-    print("\n" + "#" * 90)
-    print("DATA QUALITY SUMMARY")
-    print("#" * 90)
+    logger.info("Loaded %d/%d configured datasets.", loaded_count, len(DATASETS))
     for name, findings in report.items():
-        print(f"\n{name}:")
         for finding in findings:
-            print(f"  - {finding}")
+            level = logging.WARNING if not finding.startswith("No major") else logging.INFO
+            logger.log(level, "%s | %s", name, finding)
 
-    missing = sorted(set(DATASETS) - set(loaded))
-    if missing:
-        print(f"\nMissing datasets: {missing}")
-    print(f"\nSuccessfully loaded {len(loaded)}/{len(DATASETS)} datasets.")
-    return loaded
+    return report
+
+
+def main() -> None:
+    """Run the raw-data quality inspection."""
+    run_quality_check()
 
 
 if __name__ == "__main__":
