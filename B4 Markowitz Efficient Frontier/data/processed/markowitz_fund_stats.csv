@@ -1,0 +1,6 @@
+amfi_code,scheme_name,category,return_5yr_pct,historical_daily_return_annual,annual_volatility,sharpe_ratio_annual
+101207,ABSL Small Cap Fund - Regular - Growth,Small Cap,23.8,0.1069621227736075,0.25797322217077745,0.4146249051492597
+149323,DSP Midcap Fund - Regular - Growth,Mid Cap,19.0,0.26590814851467,0.17746159397550845,1.4983982875267539
+102887,UTI Flexi Cap Fund - Regular - Growth,Flexi Cap,15.78,0.1626258549662886,0.15758366917912994,1.0319968802187685
+148568,Mirae Asset Emerging Bluechip Fund - Regular - Growth,Large & Mid Cap,15.68,0.20791821293359272,0.15429144469823297,1.3475679960106945
+118633,Nippon India Large Cap Fund - Direct - Growth,Large Cap,14.72,0.15531106361835714,0.13997213649186158,1.1095855754647812
