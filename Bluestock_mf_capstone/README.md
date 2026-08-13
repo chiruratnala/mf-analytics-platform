@@ -7,6 +7,8 @@ structured data in a relational database, performs exploratory and
 financial analysis, and presents insights through an interactive Power
 BI dashboard.
 
+**Dashboard :**[ Mutual Fund Analytics](https://app.powerbi.com/groups/me/reports/fdb0946c-d71f-43c7-9105-79ea4eff02ec/a8ee18f1800139e0cbb4?experience=power-bi) 
+
 > **Project Type:** Individual Capstone Project\
 > **Domain:** Mutual Fund Analytics / Financial Data Analytics\
 > **Primary Tools:** Python, SQL, Power BI, Pandas, NumPy, Matplotlib,
@@ -100,33 +102,16 @@ drill-down analysis and multiple analytical views.
 
 ## 3. Key Project Objectives
 
-  -----------------------------------------------------------------------
-  ID                      Objective               Outcome
-  ----------------------- ----------------------- -----------------------
-  O1                      Build an ETL pipeline   Automated Python
-                                                  pipeline
-
-  O2                      Design structured       Relational analytical
-                          database storage        schema
-
-  O3                      Perform EDA on NAV and  Analytical charts and
-                          AUM data                insights
-
-  O4                      Calculate performance   Fund performance
-                          and risk metrics        analysis
-
-  O5                      Build an interactive BI Power BI dashboard
-                          dashboard               
-
-  O6                      Analyse investor        Demographic and
-                          behaviour               geographic insights
-
-  O7                      Compare funds with      Benchmark/performance
-                          benchmarks              analysis
-
-  O8                      Document the project    README, report and
-                                                  presentation
-  -----------------------------------------------------------------------
+ | ID | Objective | Outcome |
+|---|---|---|
+| 01 | Build an ETL pipeline | Automated Python pipeline |
+| 02 | Design structured database storage | Relational analytical schema |
+| 03 | Perform EDA on NAV and AUM data | Analytical charts and insights |
+| 04 | Calculate performance and risk metrics | Fund performance analysis |
+| 05 | Build an interactive BI dashboard | Power BI dashboard |
+| 06 | Analyse investor behaviour | Demographic and geographic insights |
+| 07 | Compare funds with benchmarks | Benchmark/performance analysis |
+| 08 | Document the project | README, report and presentation |
 
 ------------------------------------------------------------------------
 
@@ -330,8 +315,8 @@ The analysis includes sectors such as:
 ### Step 1 --- Clone the Repository
 
 ``` bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd Bluestock-Mutual-Fund-Analytics
+git clone https://github.com/chiruratnala/mf-analytics-platform.git
+cd bluestock_mf_capstone
 ```
 
 ### Step 2 --- Create a Virtual Environment
@@ -367,13 +352,7 @@ directory.
 If the project uses environment variables or a configuration file for
 the database, configure those values before execution.
 
-Example:
 
-``` text
-DATABASE_URL=<your_database_connection>
-```
-
-Do not commit passwords, API keys or other secrets to GitHub.
 
 ------------------------------------------------------------------------
 
@@ -749,8 +728,8 @@ high exposure to dominant sectors such as Banking, IT and Pharma.
 To reproduce the analysis:
 
 ``` bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd Bluestock-Mutual-Fund-Analytics
+git clone https://github.com/chiruratnala/mf-analytics-platform.git
+cd bluestock_mf_capstone
 
 python -m venv .venv
 .venv\Scripts\activate
@@ -808,10 +787,6 @@ engineering, financial analytics and business intelligence capabilities.
 The project does **not** constitute investment advice, financial advice
 or a recommendation to buy or sell any mutual fund or security.
 
-------------------------------------------------------------------------
 
-## License
 
-This project is intended for educational and portfolio purposes. Add an
-appropriate open-source license if the repository is intended for public
-redistribution.
+
